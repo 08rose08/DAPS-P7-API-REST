@@ -8,10 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+/**
+ * @Route("/api")
+ */
 class ProductController extends AbstractController
 {
     /**
-     * @Route("/products", name="list_products")
+     * @Route("/products", name="list_products", methods={"GET"})
      */
     public function showList(ProductRepository $productRepository): Response
     {
@@ -19,7 +22,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Route("/product/{id}", name="show_product")
+     * @Route("/product/{id}", name="show_product", methods={"GET"})
      */
     public function showProduct(Product $product): Response
     {
