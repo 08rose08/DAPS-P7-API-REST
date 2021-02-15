@@ -23,7 +23,7 @@ class AppFixtures extends Fixture
             $customer = new Customer();
             $customer->setName($customerName)
                     ->setEmail($customerName.'@test.fr')
-                    ->setPassword('test')
+                    ->setPassword('$argon2id$v=19$m=65536,t=4,p=1$YnVHSnZKRXhWRlJqVDkuMQ$5GRGa+XEmNqd0hQTqZPS5HzSXarVsmwxX5Ufpq9wy+o')
                     ->setRoles(['ROLE_USER']);
             $manager->persist($customer);
 
@@ -31,8 +31,6 @@ class AppFixtures extends Fixture
                 $user = new User();
                 $user->setName('User n°'.$i.' de '.$customer->getName())
                     ->setEmail($customer->getName().'client'.$i.'@test.fr')
-                    ->setPassword('test')
-                    ->setAddress($faker->address)
                     ->setCustomer($customer);
                 $manager->persist($user);
             }
