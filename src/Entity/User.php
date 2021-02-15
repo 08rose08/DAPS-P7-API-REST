@@ -32,21 +32,11 @@ class User
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("usersList")
-     */
-    private $address;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      */
     private $customer;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $password;
 
     public function getId(): ?int
     {
@@ -77,18 +67,6 @@ class User
         return $this;
     }
 
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
     public function getCustomer(): ?Customer
     {
         return $this->customer;
@@ -97,18 +75,6 @@ class User
     public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }
