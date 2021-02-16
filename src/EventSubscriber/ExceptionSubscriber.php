@@ -5,6 +5,10 @@ namespace App\EventSubscriber;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
@@ -29,13 +33,20 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }elseif($exception instanceof MethodNotAllowedHttpException){
             $data = [
                 'status' => $exception->getStatusCode(),
-                'message' => getMessage()
+                'message' => $exception->getMessage()
             ];
             $event->setResponse(new JsonResponse($data));
 
-        }else{
+        }elseif($exception instanceof AccessDeniedHttpException){
             $data = [
                 'status' => $exception->getStatusCode(),
+                'message' => 'Access denied'
+            ];
+            $event->setResponse(new JsonResponse($data));
+        }else{
+            $data = [
+                //'status' => $exception->getStatusCode(),
+                'status' => 500,
                 'message' => $exception->getMessage()
             ];
             $event->setResponse(new JsonResponse($data));
