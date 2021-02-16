@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -22,12 +23,14 @@ class User
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("usersList")
+     * @Assert\NotBlank(message="The name is required")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("usersList")
+     * @Assert\NotBlank(message="The email is required")
      */
     private $email;
 

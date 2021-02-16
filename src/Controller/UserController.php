@@ -9,7 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 
 /**
@@ -35,30 +38,38 @@ class UserController extends AbstractController
             return $this->json($user, 200, [], ['groups' => 'usersList']);
 
         }else{
-            $data = ['status' => 403, 'message' => 'Forbidden'];
-            return $this->json($data, 403);
+            throw new AccessDeniedHttpException();
+
+            //$data = ['status' => 403, 'message' => 'Forbidden'];
+            //return $this->json($data, 403);
         }
     }
 
     /**
      * @Route("/user", name="create_user", methods={"POST"})
      */
-    public function createUser(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer)
+    public function createUser(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
     {
         if($request->getContent() != null){
             $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-            if($user->getName() != null && $user->getEmail() != null){
+            //if($user->getName() != null && $user->getEmail() != null){
                 $user->setCustomer($this->getUser());
                 //Comment vérifier le $user ?
+                $errors = $validator->validate($user);
+                if (count($errors)) {
+                    return $this->json($errors, 400);
+                }
+
                 $entityManager->persist($user);
                 $entityManager->flush();
     
                 $data = ['status' => 201, 'message' => 'User added'];
                 return $this->json($data, 201);
-            }
+            //}
         }
-        $data = ['status' => 400, 'message' => 'Bad request'];
-        return $this->json($data, 400);
+        //$data = ['status' => 400, 'message' => 'Bad request'];
+        //return $this->json($data, 400);
+        throw new BadRequestHttpException('Data are missing');
     }
 
     /**
@@ -74,8 +85,9 @@ class UserController extends AbstractController
             return $this->json($data, 200);
 
         }else{
-            $data = ['status' => 403, 'message' => 'Forbidden'];
-            return $this->json($data, 403);
+            //$data = ['status' => 403, 'message' => 'Forbidden'];
+            //return $this->json($data, 403);
+            throw new AccessDeniedHttpException();
         }
     }
 }
