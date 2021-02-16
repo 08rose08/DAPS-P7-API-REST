@@ -4,10 +4,45 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation\Groups;
+//use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(
+ *  fields = {"email"},
+ *  message = "This email already exists"
+ * )
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "show_user",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "delete_user",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "list",
+ *      href = @Hateoas\Route(
+ *          "list_users",
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "Customer",
+ *      embedded = @Hateoas\Embedded("expr(object.getCustomer())")
+ * )
  */
 class User
 {
@@ -15,19 +50,21 @@ class User
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("usersList")
+     * @Groups({"usersList"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("usersList")
+     * @Groups({"usersList"})
+     * @Assert\NotBlank(message="The name is required")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("usersList")
+     * @Groups({"usersList"})
+     * @Assert\NotBlank(message="The email is required")
      */
     private $email;
 

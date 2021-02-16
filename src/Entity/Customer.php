@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use JMS\Serializer\Annotation\Groups;
 use App\Repository\CustomerRepository;
+use JMS\Serializer\Annotation\Exclude;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -19,32 +21,38 @@ class Customer implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Exclude
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"usersList"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="json")
+     * @Exclude
      */
     private $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Exclude
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Exclude
      */
     private $email;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="customer", orphanRemoval=true)
+     * @Exclude
      */
     private $users;
 
