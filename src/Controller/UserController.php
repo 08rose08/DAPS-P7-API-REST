@@ -26,15 +26,23 @@ class UserController extends AbstractController
     /**
      * @Route("/users", name="list_users", methods={"GET"})
      */
-    public function showList(UserRepository $userRepository, SerializerInterface $serializer): Response
+    public function showList(UserRepository $userRepository, SerializerInterface $serializer, Request $request): Response
     {
-        $json = $serializer->serialize(
+        /*$json = $serializer->serialize(
             $userRepository->findBy(["customer" => $this->getUser()]),
             'json',
             SerializationContext::create()->setGroups(array('Default', 'usersList'))
         );
-        return new JsonResponse($json, 200, [], true);
+        return new JsonResponse($json, 200, [], true);*/
         //return $this->json($userRepository->findBy(["customer" => $this->getUser()]), 200, [], ['groups' => 'usersList']);
+        $page = $request->query->get('page', 1);
+        $limit = 3;
+
+        $users = $userRepository->findUsers($page, $limit, $this->getUser());
+        $json = $serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('Default', 'usersList')));
+
+        return new JsonResponse($json, 200, [], true);
+
     }
 
     /**
