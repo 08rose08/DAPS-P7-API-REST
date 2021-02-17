@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Hateoas\Representation\PaginatedRepresentation;
-use Hateoas\Representation\CollectionRepresentation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -22,16 +20,16 @@ class ProductController extends AbstractController
     /**
      * @Route("/products", name="list_products", methods={"GET"})
      */
-    public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request): Response
+    public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request, PaginationController $paginationController): Response
     {
-        //$json = $serializer->serialize($productRepository->findAll(), 'json', SerializationContext::create()->setGroups(array('Default')));
-        //return new JsonResponse($json, 200, [], true);
-        //return $this->json($productRepository->findAll(), 200);
         $page = $request->query->get('page', 1);
-        $limit = 3;
-
+        $limit = 3;        
+        $totalCollection = count($productRepository->findAll());
         $products = $productRepository->findAllProducts($page, $limit);
-        $json = $serializer->serialize($products, 'json', SerializationContext::create()->setGroups(array('Default')));
+        $route = 'list_products';
+
+        $paginatedCollection = $paginationController->paginate($page, $limit, $totalCollection, $products, $route);
+        $json = $serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default')));
 
         return new JsonResponse($json, 200, [], true);
     }

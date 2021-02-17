@@ -155,6 +155,9 @@
     "nikic/php-parser": {
         "version": "v4.10.4"
     },
+    "pagerfanta/pagerfanta": {
+        "version": "v2.6.0"
+    },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
     },
