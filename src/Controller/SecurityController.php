@@ -21,7 +21,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="register", methods={"POST"})
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
+    /*public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
     {
         $values = json_decode($request->getContent());
         if(isset($values->name, $values->password, $values->email)) {
@@ -52,7 +52,7 @@ class SecurityController extends AbstractController
             'message' => 'Vous devez renseigner les clés name, email et password'
         ];
         return new JsonResponse($data, 500);
-    }
+    }*/
 
     /**
      * @Route("/login", name="login", methods={"POST"})

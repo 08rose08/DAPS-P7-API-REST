@@ -2,21 +2,28 @@
 
 namespace App\Entity;
 
+use OpenApi\Annotations as OA;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use JMS\Serializer\Annotation\Groups;
-use Hateoas\Configuration\Annotation as Hateoas;
 //use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Exclude;
+use Hateoas\Configuration\Annotation as Hateoas;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+
 /**
+ * Class User
+ * 
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * 
  * @UniqueEntity(
- *  fields = {"email"},
- *  message = "This email already exists"
+ *      fields = {"email"},
+ *      message = "This email already exists"
  * )
+ * 
  * @Hateoas\Relation(
  *      "self",
  *      href = @Hateoas\Route(
@@ -44,6 +51,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *      "Customer",
  *      embedded = @Hateoas\Embedded("expr(object.getCustomer())")
  * )
+ * 
+ * @OA\Schema(
+ *     title="User class",
+ *     description="User class",
+ * )
  */
 class User
 {
@@ -51,30 +63,58 @@ class User
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"usersList"})
+     * @Exclude
+     * @OA\Property(
+     *     description="Id",
+     *     title="Id",
+     * )
+     *
+     * @var integer
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"usersList"})
+     * @Groups({"usersList", "createUser"})
      * @Assert\NotBlank(message="The name is required")
+     * 
+     * @OA\Property(
+     *     description="Name",
+     *     title="Name",
+     * )
+     *
+     * @var string
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"usersList"})
+     * @Groups({"usersList", "createUser"})
      * @Assert\NotBlank(message="The email is required")
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
+     * 
+     * @OA\Property(
+     *     format="email",
+     *     description="Email",
+     *     title="Email",
+     * )
+     *
+     * @var string
      */
     private $email;
 
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
+     * 
+     * @OA\Property(
+     *     description="Customer relation",
+     *     title="Customer",
+     * )
+     *
+     * @var Customer Class Customer
      */
     private $customer;
 

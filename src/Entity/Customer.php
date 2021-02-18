@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use App\Repository\CustomerRepository;
@@ -10,10 +11,20 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Annotations as OA;
 
 /**
+ * Class User
+ * 
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  * @UniqueEntity(fields={"name"}, message="Cet utilisateur existe déjà")
+ * 
+ * @OA\Schema(
+ *     title="Customer class",
+ *     description="Customer class",
+ * )
  */
 class Customer implements UserInterface
 {
@@ -22,31 +33,63 @@ class Customer implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Exclude
+     * 
+     * @OA\Property(
+     *     description="Id",
+     *     title="Id",
+     * )
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"usersList"})
+     * 
+     * @OA\Property(
+     *     description="Name",
+     *     title="Name",
+     * )
+     * @var integer
      */
     private $name;
 
     /**
      * @ORM\Column(type="json")
      * @Exclude
+     * 
+     * @OA\Property(
+     *     description="Role",
+     *     title="Role",
+     * )
+     * @var string
      */
     private $roles = [];
 
     /**
-     * @var string The hashed password
      * @ORM\Column(type="string")
      * @Exclude
+     * 
+     * @OA\Property(
+     *     description="Password",
+     *     title="Password",
+     * )
+     * @var string The hashed password
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
      * @Exclude
+     * 
+     * @OA\Property(
+     *     format="email",
+     *     description="Email",
+     *     title="Email",
+     * )
+     * @var string
      */
     private $email;
 
