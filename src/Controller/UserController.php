@@ -3,12 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use OpenApi\Annotations as OA;
 use App\Repository\UserRepository;
+use OpenApi\Annotations\RequestBody;
 use JMS\Serializer\SerializerInterface;
 use App\Controller\PaginationController;
+//use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
-//use Symfony\Component\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +29,38 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class UserController extends AbstractController
 {
     /**
+     * Gets the user list of the customer
+     * 
      * @Route("/users", name="list_users", methods={"GET"})
+     * 
+     * @OA\Parameter(
+     *      name="page",
+     *      description="The page number of paginated users",
+     *      in="query",
+     *      @OA\Schema(type="integer"),
+     * )
+     * 
+     * @OA\Response(
+     *      response=200,
+     *      description="Return a JSON object of the user list",
+     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"Default", "usersList"})),
+     * )
+     * @OA\Response(
+     *      response=401,
+     *      description="JWT Token not found or expired or invalid",
+     * )
+     * @OA\Response(
+     *      response=405,
+     *      description="Method not allowed",
+     * )
+     * 
+     * @Security(name="Bearer")
+     * 
+     * @param UserRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param PaginationController $paginationController
+     * @return JsonResponse
      */
     public function showList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, PaginationController $paginationController): Response
     {
@@ -42,7 +77,45 @@ class UserController extends AbstractController
     }
 
     /**
+     * Gets the user
+     * 
      * @Route("/user/{id}", name="show_user", methods={"GET"})
+     * 
+     * @OA\Parameter(
+     *      name="id",
+     *      description="User's Id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(type="integer"),
+     * )
+     * 
+     * @OA\Response(
+     *      response=200,
+     *      description="Return a JSON object of the product",
+     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"Default", "usersList"})),
+     * )
+     * @OA\Response(
+     *      response=401,
+     *      description="JWT Token not found or expired or invalid",
+     * )
+     * @OA\Response(
+     *      response=403,
+     *      description="Access denied",
+     * )
+     * @OA\Response(
+     *      response=404,
+     *      description="Resource not found",
+     * )
+     * @OA\Response(
+     *      response=405,
+     *      description="Method not allowed",
+     * )
+     * 
+     * @Security(name="Bearer")
+     * 
+     * @param User $user
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
      */
     public function showUser(User $user, SerializerInterface $serializer)
     {
@@ -63,7 +136,53 @@ class UserController extends AbstractController
     }
 
     /**
+     * Creates a new user
+     * 
      * @Route("/user", name="create_user", methods={"POST"})
+     * 
+     * @OA\RequestBody(
+     *      description="Create user object",
+     *      required=true,
+     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"createUser"})),     
+     * )
+     * 
+     * @OA\Response(
+     *      response=204,
+     *      description="Create an user",
+     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"Default", "usersList"})),
+     * )
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad request",
+     * )
+     * @OA\Response(
+     *      response=401,
+     *      description="JWT Token not found or expired or invalid",
+     * )
+     * @OA\Response(
+     *      response=403,
+     *      description="Access denied",
+     * )
+     * @OA\Response(
+     *      response=404,
+     *      description="Resource not found",
+     * )
+     * @OA\Response(
+     *      response=405,
+     *      description="Method not allowed",
+     * )
+     * @OA\Response(
+     *      response=500,
+     *      description="Could not decode JSON, syntax error - malformed JSON.",
+     * )
+     * 
+     * @Security(name="Bearer")
+     * 
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @return JsonResponse
      */
     public function createUser(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
     {
@@ -90,7 +209,43 @@ class UserController extends AbstractController
     }
 
     /**
+     * Deletes the user
+     * 
      * @Route("/user/{id}", name="delete_user", methods={"DELETE"})
+     * 
+     * @OA\Parameter(
+     *      name="id",
+     *      description="Users Id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(type="integer"),
+     * )
+     * 
+     * @OA\Response(
+     *      response=204,
+     *      description="Delete the user",
+     * )
+     * @OA\Response(
+     *      response=401,
+     *      description="JWT Token not found or expired or invalid",
+     * )
+     * @OA\Response(
+     *      response=403,
+     *      description="Access denied",
+     * )
+     * @OA\Response(
+     *      response=404,
+     *      description="Resource not found",
+     * )
+     * @OA\Response(
+     *      response=405,
+     *      description="Method not allowed",
+     * )
+     * 
+     * @Security(name="Bearer")
+     * 
+     * @param User $user
+     * @param EntityManagerInterface $entityManager
      */
     public function deleteUser(User $user, EntityManagerInterface $entityManager)
     {

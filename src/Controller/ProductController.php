@@ -11,6 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+
 
 /**
  * @Route("/api")
@@ -18,7 +22,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ProductController extends AbstractController
 {
     /**
+     * Gets the product list
+     * 
      * @Route("/products", name="list_products", methods={"GET"})
+     * 
+     * @OA\Parameter(
+     *      name="page",
+     *      in="query",
+     *      description="Page number of paginated products",
+     *      @OA\Schema(type="integer")
+     * )
+     * 
+     * @OA\Response(
+     *      response=200,
+     *      description="Return a JSON object of the user list",
+     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"Default", "usersList"})),
+     * )
+     * @OA\Response(
+     *      response=401,
+     *      description="JWT Token not found or expired or invalid",
+     * )
+     * @OA\Response(
+     *      response=405,
+     *      description="Method not allowed",
+     * )
+     * 
+     * @Security(name="Bearer")
+     * 
+     * @param ProductRepository $productRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param PaginationController $paginationController
+     * @return JsonResponse
      */
     public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request, PaginationController $paginationController): Response
     {
@@ -35,7 +70,37 @@ class ProductController extends AbstractController
     }
 
     /**
+     * Gets the product
+     * 
      * @Route("/product/{id}", name="show_product", methods={"GET"})
+     * 
+     * @OA\Parameter(
+     *      name="id",
+     *      description="Products Id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(type="integer"),
+     * )
+     * 
+     * @OA\Response(
+     *      response=200,
+     *      description="Return a JSON object of the product",
+     *      @OA\JsonContent(ref=@Model(type=Product::class, groups={"Default", "showProduct"})),
+     * )
+     * @OA\Response(
+     *      response=401,
+     *      description="JWT Token not found or expired or invalid",
+     * )
+     * @OA\Response(
+     *      response=404,
+     *      description="Resource not found",
+     * )
+     * @OA\Response(
+     *      response=405,
+     *      description="Method not allowed",
+     * )
+     * 
+     * @Security(name="Bearer")
      */
     public function showProduct(Product $product, SerializerInterface $serializer): Response
     {

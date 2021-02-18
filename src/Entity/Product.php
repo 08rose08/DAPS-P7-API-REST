@@ -7,8 +7,11 @@ use App\Repository\ProductRepository;
 use JMS\Serializer\Annotation\Groups;
 use Hateoas\Configuration\Annotation as Hateoas;
 //use JMS\Serializer\Annotation\Groups;
+use OpenApi\Annotations as OA;
 
 /**
+ * Class Product
+ * 
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  * @Hateoas\Relation(
  *      "self",
@@ -25,6 +28,11 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          absolute = true
  *      )
  * )
+ * 
+ * @OA\Schema(
+ *     title="Product class",
+ *     description="Product class",
+ * )
  */
 class Product
 {
@@ -32,22 +40,47 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @OA\Property(
+     *     description="Id",
+     *     title="Id",
+     * )
+     *
+     * @var integer
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @OA\Property(
+     *     description="Name",
+     *     title="Name",
+     * )
+     * @var string
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
      * @Groups({"showProduct"})
+     * 
+     * @OA\Property(
+     *     description="Description",
+     *     title="Description",
+     * )
+     * @var string
      */
     private $description;
 
     /**
      * @ORM\Column(type="float")
+     * 
+     * @OA\Property(
+     *     description="Price",
+     *     title="Price",
+     * )
+     * @var float
      */
     private $price;
 

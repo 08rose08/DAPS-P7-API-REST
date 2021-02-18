@@ -7,7 +7,9 @@ use Hateoas\Representation\CollectionRepresentation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-
+/**
+ * Class used to paginate a list
+ */
 class PaginationController extends AbstractController
 {
     
