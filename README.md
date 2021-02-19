@@ -23,9 +23,7 @@ You will need to expose a number of APIs so that the applications of other web p
 * Make the migrations : `php bin/console doctrine:migrations:migrate`
 * Run `composer install`
 * Load the fixtures if you want : `php bin/console doctrine:fixtures:load`
-* Generate your keys with openssl : 
-```
-mkdir config/jwt
-openssl genrsa -out config/jwt/private.pem 4096
-openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
-```
+* Generate your keys with openssl : `mkdir config/jwt`
+                                    `openssl genrsa -out config/jwt/private.pem 4096`
+                                    `openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem`
+
