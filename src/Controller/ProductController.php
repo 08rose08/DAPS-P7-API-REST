@@ -35,8 +35,11 @@ class ProductController extends AbstractController
      * 
      * @OA\Response(
      *      response=200,
-     *      description="Return a JSON object of the user list",
-     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"Default", "usersList"})),
+     *      description="Return a JSON object of the product list",
+     *      @OA\JsonContent(
+     *          type="array",
+     *          @OA\Items(ref=@Model(type=Product::class, groups={"Default"}))
+     *      ),
      * )
      * @OA\Response(
      *      response=401,
