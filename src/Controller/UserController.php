@@ -4,11 +4,12 @@ namespace App\Controller;
 
 use App\Entity\User;
 use OpenApi\Annotations as OA;
+use OpenApi\Annotations\Items;
 use App\Repository\UserRepository;
 use OpenApi\Annotations\RequestBody;
 use JMS\Serializer\SerializerInterface;
-use App\Controller\PaginationController;
 //use Symfony\Component\Serializer\SerializerInterface;
+use App\Controller\PaginationController;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -43,7 +44,10 @@ class UserController extends AbstractController
      * @OA\Response(
      *      response=200,
      *      description="Return a JSON object of the user list",
-     *      @OA\JsonContent(ref=@Model(type=User::class, groups={"Default", "usersList"})),
+     *      @OA\JsonContent(
+     *          type="array",
+     *          @OA\Items(ref=@Model(type=User::class, groups={"Default", "usersList"}))
+     *      ),
      * )
      * @OA\Response(
      *      response=401,
