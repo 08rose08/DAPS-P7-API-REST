@@ -12,7 +12,15 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class PaginationController extends AbstractController
 {
-    
+    /**
+     * Prepare the paginated collection
+     * @param int $page
+     * @param int $limit
+     * @param int $totalCollection
+     * @param array $products
+     * @param string $route
+     * @return PaginatedRepresentation object with the paginated products
+     */
     public function paginate($page, $limit, $totalCollection, $products, $route)
     {
         $totalPages = intval($totalCollection/$limit);
