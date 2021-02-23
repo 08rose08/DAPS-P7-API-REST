@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\Pagination;
 use OpenApi\Annotations as OA;
 use OpenApi\Annotations\Items;
 use App\Repository\UserRepository;
 use OpenApi\Annotations\RequestBody;
-use JMS\Serializer\SerializerInterface;
 //use Symfony\Component\Serializer\SerializerInterface;
-use App\Controller\PaginationController;
+use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -63,10 +63,10 @@ class UserController extends AbstractController
      * @param UserRepository $userRepository
      * @param SerializerInterface $serializer
      * @param Request $request
-     * @param PaginationController $paginationController
+     * @param Pagination $pagination
      * @return JsonResponse
      */
-    public function showList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, PaginationController $paginationController): Response
+    public function showList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, Pagination $pagination): Response
     {
         $page = $request->query->get('page', 1);
         $limit = 3;
@@ -74,7 +74,7 @@ class UserController extends AbstractController
         $users = $userRepository->findUsers($page, $limit, $this->getUser());
         $route = 'list_users';
 
-        $paginatedCollection = $paginationController->paginate($page, $limit, $totalCollection, $users, $route);
+        $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $users, $route);
         $json = $serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default', 'usersList')));
         
         return new JsonResponse($json, 200, [], true);
