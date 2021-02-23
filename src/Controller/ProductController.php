@@ -3,17 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Service\Pagination;
+use OpenApi\Annotations as OA;
 use App\Repository\ProductRepository;
 use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use OpenApi\Annotations as OA;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
 
 
 /**
@@ -55,10 +56,10 @@ class ProductController extends AbstractController
      * @param ProductRepository $productRepository
      * @param SerializerInterface $serializer
      * @param Request $request
-     * @param PaginationController $paginationController
+     * @param Pagination $pagination
      * @return JsonResponse
      */
-    public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request, PaginationController $paginationController): Response
+    public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request, Pagination $pagination): Response
     {
         $page = $request->query->get('page', 1);
         $limit = 3;        
@@ -66,7 +67,7 @@ class ProductController extends AbstractController
         $products = $productRepository->findAllProducts($page, $limit);
         $route = 'list_products';
 
-        $paginatedCollection = $paginationController->paginate($page, $limit, $totalCollection, $products, $route);
+        $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $products, $route);
         $json = $serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default')));
 
         return new JsonResponse($json, 200, [], true);
