@@ -84,16 +84,30 @@ class Product
      */
     private $price;
 
+    /**
+     * Getter for Id
+     * @return integer id current value
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Getter for Name
+     * @return string name current value
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Setter for Name
+     * 
+     * @param string $name name value to set
+     * @return string name current value
+     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -101,11 +115,21 @@ class Product
         return $this;
     }
 
+    /**
+     * Getter for description
+     * @return string description current value
+     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
+    /**
+     * Setter for description
+     * 
+     * @param string $description description value to set
+     * @return string description current value
+     */
     public function setDescription(string $description): self
     {
         $this->description = $description;
@@ -113,11 +137,21 @@ class Product
         return $this;
     }
 
+    /**
+     * Getter for price
+     * @return float price current value
+     */
     public function getPrice(): ?float
     {
         return $this->price;
     }
 
+    /**
+     * Setter for price
+     * 
+     * @param float $price price value to set
+     * @return float price current value
+     */
     public function setPrice(float $price): self
     {
         $this->price = $price;

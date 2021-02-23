@@ -118,17 +118,30 @@ class User
      */
     private $customer;
 
-
+    /**
+     * Getter for Id
+     * @return integer id current value
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Getter for Name
+     * @return string name current value
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Setter for Name
+     * 
+     * @param string $name name value to set
+     * @return string name current value
+     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -136,11 +149,21 @@ class User
         return $this;
     }
 
+    /**
+     * Getter for Email
+     * @return string email current value
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    /**
+     * Setter for Email
+     * 
+     * @param string $email email value to set
+     * @return string email current value
+     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -148,11 +171,22 @@ class User
         return $this;
     }
 
+    /**
+     * Getter for Customer
+     * 
+     * @return Customer customer current value
+     */
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
+    /**
+     * Setter for Customer
+     * 
+     * @param Customer $customer customer value to set
+     * @return Customer current value
+     */
     public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;

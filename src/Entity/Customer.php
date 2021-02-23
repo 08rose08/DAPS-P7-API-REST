@@ -3,17 +3,18 @@
 namespace App\Entity;
 
 
+use OpenApi\Annotations as OA;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use App\Repository\CustomerRepository;
 use JMS\Serializer\Annotation\Exclude;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints as Assert;
-use OpenApi\Annotations as OA;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class User
@@ -49,7 +50,7 @@ class Customer implements UserInterface
      *     description="Name",
      *     title="Name",
      * )
-     * @var integer
+     * @var string
      */
     private $name;
 
@@ -61,7 +62,7 @@ class Customer implements UserInterface
      *     description="Role",
      *     title="Role",
      * )
-     * @var string
+     * @var array
      */
     private $roles = [];
 
@@ -96,6 +97,11 @@ class Customer implements UserInterface
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="customer", orphanRemoval=true)
      * @Exclude
+     * 
+     * @OA\Property(
+     *      type="array",
+     *      @OA\Items(ref=@Model(type=User::class))
+     * )
      */
     private $users;
 
@@ -104,16 +110,30 @@ class Customer implements UserInterface
         $this->users = new ArrayCollection();
     }
 
+    /**
+     * Getter for Id
+     * @return integer id current value
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Getter for Name
+     * @return string name current value
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * Setter for Name
+     * 
+     * @param string $name name value to set
+     * @return string name current value
+     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -132,6 +152,8 @@ class Customer implements UserInterface
     }
 
     /**
+     * Getter for roles
+     * @return array roles current value
      * @see UserInterface
      */
     public function getRoles(): array
@@ -143,6 +165,12 @@ class Customer implements UserInterface
         return array_unique($roles);
     }
 
+    /**
+     * Setter for roles
+     * 
+     * @param array $roles roles value to set
+     * @return array roles current value
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -151,6 +179,8 @@ class Customer implements UserInterface
     }
 
     /**
+     * Getter for password
+     * @return string password current value
      * @see UserInterface
      */
     public function getPassword(): string
@@ -158,6 +188,12 @@ class Customer implements UserInterface
         return (string) $this->password;
     }
 
+    /**
+     * Setter for password
+     * 
+     * @param string $password password value to set
+     * @return string password current value
+     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -184,12 +220,21 @@ class Customer implements UserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
-
+    /**
+     * Getter for Email
+     * @return string email current value
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    /**
+     * Setter for Email
+     * 
+     * @param string $email email value to set
+     * @return string email current value
+     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -198,6 +243,7 @@ class Customer implements UserInterface
     }
 
     /**
+     * Getter for users
      * @return Collection|User[]
      */
     public function getUsers(): Collection
@@ -205,6 +251,11 @@ class Customer implements UserInterface
         return $this->users;
     }
 
+    /**
+     * Adder for user
+     * @param User $user user value to add
+     * @return Collection|User[]
+     */
     public function addUser(User $user): self
     {
         if (!$this->users->contains($user)) {
@@ -214,7 +265,11 @@ class Customer implements UserInterface
 
         return $this;
     }
-
+    /**
+     * Remover for user
+     * @param User $user user value to remove
+     * @return Collection|User[]
+     */
     public function removeUser(User $user): self
     {
         if ($this->users->removeElement($user)) {
