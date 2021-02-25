@@ -186,9 +186,10 @@ class UserController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @param SerializerInterface $serializer
      * @param ValidatorInterface $validator
+     * @param UserRepository $userRepository
      * @return JsonResponse
      */
-    public function createUser(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function createUser(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator, UserRepository $userRepository)
     {
         if($request->getContent() != null){
             $user = $serializer->deserialize($request->getContent(), User::class, 'json');
@@ -203,8 +204,16 @@ class UserController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
     
-                $data = ['status' => 201, 'message' => 'User added'];
-                return $this->json($data, 201);
+                //$data = ['status' => 201, 'message' => 'User added'];
+                //return $this->json($data, 201);
+                $user = $userRepository->findBy(["email" => $user->getEmail()]);
+                $json = $serializer->serialize(
+                    $user,
+                    'json',
+                    SerializationContext::create()->setGroups(array('Default', 'usersList'))
+                );
+                return new JsonResponse($json, 201, [], true);
+
             //}
         }
         //$data = ['status' => 400, 'message' => 'Bad request'];
