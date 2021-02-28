@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use OpenApi\Annotations as OA;
 
 /**
  * @Route("/api")
@@ -56,6 +57,7 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/login", name="login", methods={"POST"})
+     * @OA\Tag(name="Customer")
      */
     public function login(Request $request)
     {

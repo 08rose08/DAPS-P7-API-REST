@@ -52,6 +52,7 @@ class ProductController extends AbstractController
      * )
      * 
      * @Security(name="Bearer")
+     * @OA\Tag(name="Product")
      * 
      * @param ProductRepository $productRepository
      * @param SerializerInterface $serializer
@@ -105,6 +106,7 @@ class ProductController extends AbstractController
      * )
      * 
      * @Security(name="Bearer")
+     * @OA\Tag(name="Product")
      */
     public function showProduct(Product $product, SerializerInterface $serializer): Response
     {

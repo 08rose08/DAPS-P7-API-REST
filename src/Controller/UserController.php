@@ -59,6 +59,7 @@ class UserController extends AbstractController
      * )
      * 
      * @Security(name="Bearer")
+     * @OA\Tag(name="User")
      * 
      * @param UserRepository $userRepository
      * @param SerializerInterface $serializer
@@ -116,6 +117,7 @@ class UserController extends AbstractController
      * )
      * 
      * @Security(name="Bearer")
+     * @OA\Tag(name="User")
      * 
      * @param User $user
      * @param SerializerInterface $serializer
@@ -181,6 +183,7 @@ class UserController extends AbstractController
      * )
      * 
      * @Security(name="Bearer")
+     * @OA\Tag(name="User")
      * 
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -256,6 +259,7 @@ class UserController extends AbstractController
      * )
      * 
      * @Security(name="Bearer")
+     * @OA\Tag(name="User")
      * 
      * @param User $user
      * @param EntityManagerInterface $entityManager

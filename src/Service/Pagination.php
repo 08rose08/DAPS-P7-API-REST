@@ -12,7 +12,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class Pagination
 {
     /**
-     * Prepare the paginated collection
+     * Prepares the paginated collection
+     * 
      * @param int $page
      * @param int $limit
      * @param int $totalCollection

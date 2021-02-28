@@ -20,6 +20,13 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * Finds the users with the page number and the limit
+     * @param int $page
+     * @param int $limit
+     * @param Customer $customer
+     * @return array Returns an array of users objects
+     */
     public function findUsers($page, $limit, $customer)
     {
         $query = $this->createQueryBuilder('p')

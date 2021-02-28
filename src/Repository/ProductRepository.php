@@ -20,6 +20,12 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    /**
+     * Finds the products with the page number and the limit
+     * @param int $page
+     * @param int $limit
+     * @return array Returns an array of Product objects
+     */
     public function findAllProducts($page, $limit)
     {
         $query = $this->createQueryBuilder('p')
