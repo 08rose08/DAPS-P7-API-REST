@@ -27,3 +27,4 @@ You will need to expose a number of APIs so that the applications of other web p
                                     `openssl genrsa -out config/jwt/private.pem 4096`
                                     `openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem`
 
+* Access to the doc : <a href="http://localhost:8000/api/doc">http://localhost:8000/api/doc</a>
