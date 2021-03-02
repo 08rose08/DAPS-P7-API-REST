@@ -13,11 +13,17 @@ use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -29,6 +35,13 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class UserController extends AbstractController
 {
+    private $cache;
+    
+    public function __construct(TagAwareCacheInterface $cache) 
+    {
+        $this->cache = $cache;
+        
+    }
     /**
      * Gets the user list of the customer
      * 
@@ -71,11 +84,20 @@ class UserController extends AbstractController
     {
         $page = $request->query->get('page', 1);
         $limit = 3;
-        $totalCollection = count($userRepository->findBy(["customer" => $this->getUser()]));
-        $users = $userRepository->findUsers($page, $limit, $this->getUser());
         $route = 'list_users';
 
-        $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $users, $route);
+        $totalCollectionCache = $this->cache->get('users-list-total', function(ItemInterface $item) use ($userRepository) {
+            $item->tag('users');
+            return $userRepository->findBy(["customer" => $this->getUser()]);
+        });
+        $totalCollection = count($totalCollectionCache);
+
+        $usersCache = $this->cache->get('users-list-'.$page, function(ItemInterface $item) use ($userRepository, $page, $limit) {
+            $item->tag('users');
+            return $userRepository->findUsers($page, $limit, $this->getUser());
+        });
+
+        $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $usersCache, $route);
         $json = $serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default', 'usersList')));
         
         return new JsonResponse($json, 200, [], true);
@@ -215,6 +237,8 @@ class UserController extends AbstractController
                     'json',
                     SerializationContext::create()->setGroups(array('Default', 'usersList'))
                 );
+                //$this->cache->delete('users-list-total');
+                $this->cache->invalidateTags(['users']);
                 return new JsonResponse($json, 201, [], true);
 
             //}
@@ -269,6 +293,9 @@ class UserController extends AbstractController
         if($user->getCustomer() == $this->getUser()){
             $entityManager->remove($user);
             $entityManager->flush();
+
+            $this->cache->invalidateTags(['users']);
+            
             // quel code ?? -> 204 avec body vide
             //$data = ['status' => 200, 'message' => 'User deleted'];
             return $this->json(null, 204);

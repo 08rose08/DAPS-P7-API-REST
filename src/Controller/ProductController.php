@@ -9,6 +9,7 @@ use App\Repository\ProductRepository;
 use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Contracts\Cache\CacheInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,15 +61,19 @@ class ProductController extends AbstractController
      * @param Pagination $pagination
      * @return JsonResponse
      */
-    public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request, Pagination $pagination): Response
+    public function showList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request, Pagination $pagination, CacheInterface $cache): Response
     {
         $page = $request->query->get('page', 1);
         $limit = 3;        
         $totalCollection = count($productRepository->findAll());
-        $products = $productRepository->findAllProducts($page, $limit);
+
+        $productsCache = $cache->get('products-list'.$page, function() use ($productRepository, $page, $limit) {
+            
+            return $productRepository->findAllProducts($page, $limit);
+        });
         $route = 'list_products';
 
-        $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $products, $route);
+        $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $productsCache, $route);
         $json = $serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default')));
 
         return new JsonResponse($json, 200, [], true);
@@ -110,7 +115,8 @@ class ProductController extends AbstractController
      */
     public function showProduct(Product $product, SerializerInterface $serializer): Response
     {
-        $json = $serializer->serialize($product, 'json', SerializationContext::create()->setGroups(array('Default', 'showProduct')));
+        
+        $json = $serializer->serialize($productCache, 'json', SerializationContext::create()->setGroups(array('Default', 'showProduct')));
         return new JsonResponse($json, 200, [], true);
         //return $this->json($product, 200);
     }
