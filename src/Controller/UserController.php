@@ -36,10 +36,12 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class UserController extends AbstractController
 {
     private $cache;
+    private $serializer;
     
-    public function __construct(TagAwareCacheInterface $cache) 
+    public function __construct(TagAwareCacheInterface $cache, SerializerInterface $serializer) 
     {
         $this->cache = $cache;
+        $this->serializer = $serializer;
         
     }
     /**
@@ -75,12 +77,11 @@ class UserController extends AbstractController
      * @OA\Tag(name="User")
      * 
      * @param UserRepository $userRepository
-     * @param SerializerInterface $serializer
      * @param Request $request
      * @param Pagination $pagination
      * @return JsonResponse
      */
-    public function showList(UserRepository $userRepository, SerializerInterface $serializer, Request $request, Pagination $pagination): Response
+    public function showList(UserRepository $userRepository, Request $request, Pagination $pagination): Response
     {
         $page = $request->query->get('page', 1);
         $limit = 3;
@@ -98,7 +99,7 @@ class UserController extends AbstractController
         });
 
         $paginatedCollection = $pagination->paginate($page, $limit, $totalCollection, $usersCache, $route);
-        $json = $serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default', 'usersList')));
+        $json = $this->serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(array('Default', 'usersList')));
         
         return new JsonResponse($json, 200, [], true);
     }
@@ -142,14 +143,13 @@ class UserController extends AbstractController
      * @OA\Tag(name="User")
      * 
      * @param User $user
-     * @param SerializerInterface $serializer
      * @return JsonResponse
      */
-    public function showUser(User $user, SerializerInterface $serializer)
+    public function showUser(User $user)
     {
         if($user->getCustomer() == $this->getUser()){
             //return $this->json($user, 200, [], ['groups' => 'usersList']);
-            $json = $serializer->serialize(
+            $json = $this->serializer->serialize(
                 $user,
                 'json',
                 SerializationContext::create()->setGroups(array('Default', 'usersList'))
@@ -209,15 +209,15 @@ class UserController extends AbstractController
      * 
      * @param Request $request
      * @param EntityManagerInterface $entityManager
-     * @param SerializerInterface $serializer
+     
      * @param ValidatorInterface $validator
      * @param UserRepository $userRepository
      * @return JsonResponse
      */
-    public function createUser(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator, UserRepository $userRepository)
+    public function createUser(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator, UserRepository $userRepository)
     {
         if($request->getContent() != null){
-            $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+            $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
             //if($user->getName() != null && $user->getEmail() != null){
                 $user->setCustomer($this->getUser());
                 //Comment vérifier le $user ?
@@ -232,7 +232,7 @@ class UserController extends AbstractController
                 //$data = ['status' => 201, 'message' => 'User added'];
                 //return $this->json($data, 201);
                 $user = $userRepository->findBy(["email" => $user->getEmail()]);
-                $json = $serializer->serialize(
+                $json = $this->serializer->serialize(
                     $user,
                     'json',
                     SerializationContext::create()->setGroups(array('Default', 'usersList'))

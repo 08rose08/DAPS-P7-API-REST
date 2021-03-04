@@ -112,11 +112,15 @@ class ProductController extends AbstractController
      * 
      * @Security(name="Bearer")
      * @OA\Tag(name="Product")
+     * 
+     * @param Product $product
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
      */
     public function showProduct(Product $product, SerializerInterface $serializer): Response
     {
         
-        $json = $serializer->serialize($productCache, 'json', SerializationContext::create()->setGroups(array('Default', 'showProduct')));
+        $json = $serializer->serialize($product, 'json', SerializationContext::create()->setGroups(array('Default', 'showProduct')));
         return new JsonResponse($json, 200, [], true);
         //return $this->json($product, 200);
     }
